@@ -16,31 +16,70 @@ if (isset($_POST["import"])) {
             if($rownum == 1){ $rownum++; continue; } //skip the header
 
             $findhtl = $column[0];
-            $htlname = " ";
+            $receipt_num = $column[1];
+            $name = $column[2];
+            $mobile = $column[3];
+            $city = $column[4];
+            $noofpersons = $column[5];
+            $din = $column[6];              // coln. 6 is handled below
+            $time_in = $column[7];          // coln. 7 is handled below
+            $advance_paid = $column[8];
+            $dout = $column[9];             // coln. 9 is handled below
+            $time_out = $column[10];        // coln. 10 is handled below
+            $balance_amount = $column[11];
+            $donation = $column[12];
+            $free = $column[12];
+
+            //convert into date format
+            $dtin = DateTime::createFromFormat('d/m/Y', $din, new DateTimeZone(('UTC')));
+            if (!$dtin) {    $date_check_in = " "; } else { $date_check_in = $dtin->format('Y-m-d');}
+
+            $dtout = DateTime::createFromFormat('d/m/Y', $dout, new DateTimeZone(('UTC')));
+            if (!$dtout) {    $date_check_out = " "; } else { $date_check_out = $dtout->format('Y-m-d');}
+
+            //convert into time format
+            $new_intime = DateTime::createFromFormat('h.i A', $time_in, new DateTimeZone(('UTC')));
+            if (!$new_intime) { 
+                $new_intime = DateTime::createFromFormat('h A', $time_in, new DateTimeZone(('UTC')));
+                if (!$new_intime) { $time_check_in = " "; } else { $time_check_in = $new_intime->format('H:i:s');} 
+            } else { $time_check_in = $new_intime->format('H:i:s');} 
+
+            $new_outtime = DateTime::createFromFormat('h.i A', $time_out, new DateTimeZone(('UTC')));
+            if (!$new_outtime) { 
+                $new_outtime = DateTime::createFromFormat('h A', $time_out, new DateTimeZone(('UTC')));
+                if (!$new_outtime) { $time_check_out = " ";  } else { $time_check_out = $new_outtime->format('H:i:s');} 
+            } else { $time_check_out = $new_outtime->format('H:i:s');} 
+
+            /* 
+                Following is to derive hotel name from room number and also to prefix hotel code 
+                for multiple room numbers in one receipt and one booking e.g. SK1/2/5 to be SK1,SK2,SK3
+            */
+
+            $hotel_name = " ";
             $htlprefix = " ";
             if (stripos($findhtl,"BV") !== false) {
-                $htlname = "Bharati Vihara";
+                $hotel_name = "Bharati Vihara";
                 $htlprefix = "BV";
             } else if (stripos($findhtl,"BTK") !== false) {
-                $htlname = "Bharati Tirtha Kripa";
+                $hotel_name = "Bharati Tirtha Kripa";
                 $htlprefix = "BTK";
             } else if (stripos($findhtl,"SSK") !== false) {
-                $htlname = "Sri Shankara Kripa";
+                $hotel_name = "Sri Shankara Kripa";
                 $htlprefix = "SSK";
             } else if (stripos($findhtl,"SK") !== false) {
-                $htlname = "Sri Sharada Kripa";
+                $hotel_name = "Sri Sharada Kripa";
                 $htlprefix = "SK";
             } else if (stripos($findhtl,"TTD") !== false) {
-                $htlname = "Tirumala Tirupathi Devasthanom";
+                $hotel_name = "Tirumala Tirupathi Devasthanom";
                 $htlprefix = "TTD";
             } else if (stripos($findhtl,"NYN") !== false) {
-                $htlname = "New Yatri Nivas";
+                $hotel_name = "New Yatri Nivas";
                 $htlprefix = "NYN";
             } else if (stripos($findhtl,"YN") !== false) {
-                $htlname = "Yatri Nivas";
+                $hotel_name = "Yatri Nivas";
                 $htlprefix = "YN";
             } else if (stripos($findhtl,"VBN") !== false) {
-                $htlname = "Vidya Bharati Nilaya";
+                $hotel_name = "Vidya Bharati Nilaya";
                 $htlprefix = "VBN";
             }
 
@@ -50,38 +89,64 @@ if (isset($_POST["import"])) {
             } else if (stripos($findhtl,"\\") !== false) {
                 $roomArray = explode('\\', $findhtl);
             } 
-            
-
-            $dtin = DateTime::createFromFormat('d/m/Y', $column[6], new DateTimeZone(('UTC')));
-            if (!$dtin) {    $din=" "; } else { $din = $dtin->format('Y-m-d');}
-
-            $dtout = DateTime::createFromFormat('d/m/Y', $column[9], new DateTimeZone(('UTC')));
-            if (!$dtout) {    $dout=" "; } else { $dout = $dtout->format('Y-m-d');}
            
             //Split the rooms and make seperate entry for each room
-            $noofpersons = $column[5];
-            $advance_paid = $column[8];
-            $balance_amount = $column[11];
-            $donation = $column[12];
-            foreach ($roomArray as $roomnum) {
+            foreach ($roomArray as $roomno) {
                 //echo $my_Array.'<br>';  
 
-                if (stripos($roomnum,$htlprefix) !== false) {
-                    $roomnum = $roomnum;
-
+                if (stripos($roomno,$htlprefix) !== false) {
+                    $roomno = $roomno;
                 } else {
                     /* 
                         Since the room numbers are made seperate entry the amounts and occupancy has to 
                         be entered only once against one receipt. In this case there are same 
                         receipt numbers across multiple rooms. 
                     */
-                    $roomnum = $htlprefix.$roomnum;
                     $noofpersons = 0;
                     $advance_paid = 0;
                     $balance_amount = 0;
                     $donation = 0;
-                }
 
+                    /*
+                        Check is this is another hotel for same receipt. If yes update hotel name and room prefix
+                    */
+
+                    if (stripos($roomno,"BV") !== false) {
+                        $hotel_name = "Bharati Vihara";
+                        $htlprefix = "BV";
+                    } else if (stripos($roomno,"BTK") !== false) {
+                        $hotel_name = "Bharati Tirtha Kripa";
+                        $htlprefix = "BTK";
+                    } else if (stripos($roomno,"SSK") !== false) {
+                        $hotel_name = "Sri Shankara Kripa";
+                        $htlprefix = "SSK";
+                    } else if (stripos($roomno,"SK") !== false) {
+                        $hotel_name = "Sri Sharada Kripa";
+                        $htlprefix = "SK";
+                    } else if (stripos($roomno,"TTD") !== false) {
+                        $hotel_name = "Tirumala Tirupathi Devasthanom";
+                        $htlprefix = "TTD";
+                    } else if (stripos($roomno,"NYN") !== false) {
+                        $hotel_name = "New Yatri Nivas";
+                        $htlprefix = "NYN";
+                    } else if (stripos($roomno,"YN") !== false) {
+                        $hotel_name = "Yatri Nivas";
+                        $htlprefix = "YN";
+                    } else if (stripos($roomno,"VBN") !== false) {
+                        $hotel_name = "Vidya Bharati Nilaya";
+                        $htlprefix = "VBN";
+                    } else { 
+                        /* 
+                            this room number does not have any prefix of hotel so take the 
+                            same prefix as previous room for same receipt 
+                        */
+                        $roomno = $htlprefix.$roomno;
+                    }
+                } // End of Room number prefix and other associated value Analysis
+
+                /* 
+                    All data pre-processing are complete load data into temp table in database
+                */
                 $sqlInsert = "INSERT into bookingcounterdata_t (
                                                             roomno
                                                             ,receipt_num 
@@ -100,21 +165,21 @@ if (isset($_POST["import"])) {
                                                             ,hotel_name                                                 
                                                             ) 
                                             values (
-                                                     '" . $roomnum. "'
-                                                    ,'" . $column[1] . "'
-                                                    ,'" . $column[2] . "'
-                                                    ,'" . $column[3] . "'
-                                                    ,'" . $column[4] . "'
+                                                     '" . $roomno. "'
+                                                    ,'" . $receipt_num . "'
+                                                    ,'" . $name . "'
+                                                    ,'" . $mobile . "'
+                                                    ,'" . $city . "'
                                                     ,'" . $noofpersons . "'
-                                                    ,'" . $din. "'
-                                                    ,'" . $column[7] . "'
+                                                    ,'" . $date_check_in. "'
+                                                    ,'" . $time_check_in . "'
                                                     ,'" . $advance_paid . "'
-                                                    ,'" . $dout. "'
-                                                    ,'" . $column[10] . "' 
+                                                    ,'" . $date_check_out. "'
+                                                    ,'" . $time_check_out . "' 
                                                     ,'" . $balance_amount . "'
                                                     ,'" . $donation . "'
-                                                    ,'" . $column[13] . "'
-                                                    ,'" . $htlname ."'                                                                
+                                                    ,'" . $free . "'
+                                                    ,'" . $hotel_name ."'                                                                
                                                     )";
             
                 $result = mysqli_query($conn, $sqlInsert);
