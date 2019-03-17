@@ -91,8 +91,11 @@ $(document).ready(function() {
             } else {
                 var date_format = new Date();
                 var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date()));
+                var finalAllowedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date()));
                 selectedDate.setDate(selectedDate.getDate()+1);
+                finalAllowedDate.setDate(finalAllowedDate.getDate() + 3);
                 $("#check_out_time").datepicker("option", "minDate", selectedDate);
+                $("#check_out_time").datepicker("option", "maxDate", finalAllowedDate);
             }
         },
         onSelect: function(selectedDate) {

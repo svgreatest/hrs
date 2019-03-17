@@ -237,7 +237,34 @@ $(document).ready(function() {
         });
     }
 
-    $("#from_date").datepicker({
+    $("#from_date_id").datepicker({
+        showOtherMonths: false,
+        dateFormat: 'dd-mm-yy',
+        minDate: 0,
+        maxDate: "+1M",
+        beforeShowDay: function (date) {
+            return highlightDateBorder($("#from_date_id").val(), date);
+        },
+        onSelect: function(selectedDate) {
+            var date_format = selectedDate.split("-");
+            var selectedDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
+            var maxDate = new Date($.datepicker.formatDate('yy-mm-dd', new Date(date_format[2], date_format[1] - 1, date_format[0])));
+            maxDate.setDate(selectedDate.getDate() + 3);
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            $("#to_date_id").datepicker("option", "minDate", selectedDate);
+            $("#to_date_id").datepicker("option", "maxDate", maxDate);
+        },
+    });
+
+    $("#to_date_id").datepicker({
+        showOtherMonths: true,
+        dateFormat: 'dd-mm-yy',
+        beforeShowDay: function (date) {
+            return highlightDateBorder($("#to_date_id").val(), date);
+        },
+    });
+
+        $("#from_date").datepicker({
         showOtherMonths: false,
         dateFormat: 'dd-mm-yy',
         minDate: 0,
