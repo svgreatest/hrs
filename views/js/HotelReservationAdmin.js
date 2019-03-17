@@ -241,7 +241,7 @@ $(document).ready(function() {
         showOtherMonths: false,
         dateFormat: 'dd-mm-yy',
         minDate: 0,
-        maxDate: "+1M",
+        maxDate: "+3D",
         beforeShowDay: function (date) {
             return highlightDateBorder($("#from_date_id").val(), date);
         },
