@@ -1110,3 +1110,27 @@ function showLangField(select_lang_name, id_lang)
 $(function() {
     $('[data-toggle="popover"]').popover()
 });
+
+
+    $('body').on('click', '#load_file', function() {
+        $current_btn = $(this);
+        alert(load_data_url);
+        // var comment = $("#comment_" + id_room).val();
+
+        $.ajax({
+            url: load_data_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                ajax: true,
+                action: 'loadDataFromFile',
+                token: token
+            },
+            success: function(result) {
+                if (result) {
+                    alert(result);
+                }
+            }
+        });
+    });
+
