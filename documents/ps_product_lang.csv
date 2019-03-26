@@ -1,0 +1,14 @@
+﻿id_product,id_shop,id_lang,description,description_short,link_rewrite,meta_description,meta_keywords,meta_title,name,available_now,available_later
+
+,1,1,<p>BTK_Internal_2B</p>,<p>BTK Internal</p>,BTM_Internal_2B,,,,BTK_Internal_2B,,
+
+,1,1,<p>BTK_Internal_3B</p>,<p>BTK Internal</p>,BTM_Internal_3B,,,,BTK_Internal_3B,,
+
+,1,1,<p>BTK_Online_2B</p>,<p>BTK Online</p>,BTM_Online_2B,,,,BTK_Online_2B,,
+
+,1,1,<p>BTK_Online_3B</p>,<p>BTK Online</p>,BTM_Online_3B,,,,BTK_Online_3B,,
+
+,1,1,<p>BTK_Walkin_2B</p>,<p>BTK Walkin</p>,BTM_Walkin_2B,,,,BTK_Walkin_2B,,
+
+,1,1,<p>BTK_Walkin_3B</p>,<p>BTK Walkin</p>,BTM_Walkin_3B,,,,BTK_Walkin_3B,,
+

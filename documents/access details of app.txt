@@ -1,0 +1,15 @@
+user name: ranga_pj@hotmail.com / Rama@108
+DB: prestoapp
+user : root / blank 
+
+localhost/phpmyadmin/
+
+-----
+
+Installation [https://qloapps.com/install-qloapps/  - install guide]
+1. Extract the hotelcommerce.zip and place the extract under htdocs of xampp.
+2. Access the url http://localhost/<folder name of extract>
+
+
+----
+1. Installation : 
