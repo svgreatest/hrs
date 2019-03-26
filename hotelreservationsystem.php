@@ -343,16 +343,16 @@ class hotelreservationsystem extends Module
         $htl_helper = new HotelHelper();
         if (!parent::install()
             || !$this->callInstallTab()
-            || !$htl_helper->insertDefaultHotelEntries()
-            || !$htl_helper->deletePrestashopDefaultCategories()
-            || !$htl_helper->deletePrestashopDefaultFeatures()
-            || !$htl_helper->createHotelRoomDefaultFeatures()
-            || !$htl_helper->insertHotelCommonFeatures()
-            || !$htl_helper->insertHotelRoomsStatus()
-            || !$htl_helper->insertHotelRoomsCategories()
-            || !$htl_helper->insertHotelOrderStatus()
-            || !$htl_helper->insertHotelRoomAllotmentType()
-            || !$htl_helper->createDummyDataForProject()
+            //|| !$htl_helper->insertDefaultHotelEntries()
+            //|| !$htl_helper->deletePrestashopDefaultCategories()
+            //|| !$htl_helper->deletePrestashopDefaultFeatures()
+            //|| !$htl_helper->createHotelRoomDefaultFeatures()
+            //|| !$htl_helper->insertHotelCommonFeatures()
+            //|| !$htl_helper->insertHotelRoomsStatus()
+            //|| !$htl_helper->insertHotelRoomsCategories()
+            //|| !$htl_helper->insertHotelOrderStatus()
+            //|| !$htl_helper->insertHotelRoomAllotmentType()
+            //|| !$htl_helper->createDummyDataForProject()
             || !$this->registerHook('displayHeader')
             || !$this->registerHook('displayTop')
             || !$this->registerHook('displayAfterHookTop')
@@ -484,7 +484,7 @@ class hotelreservationsystem extends Module
     {
         if (!parent::uninstall()
             || !$this->deleteConfigVars()
-            || !$this->deleteTables()
+            //|| !$this->deleteTables()
             || !$this->callUninstallTab()) {
             return false;
         }
